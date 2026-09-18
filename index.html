@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Order Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="loginPage" class="login-page">
+    <div class="login-left">
+        <div class="brand-logo">🍽️</div>
+        <h1>Food Order</h1>
+        <h1>Management System</h1>
+        <p>Manage food, customers and orders from one simple dashboard.</p>
+    </div>
+    <div class="login-card">
+        <h2>Welcome Back</h2>
+        <p class="login-subtitle">Login to your admin account</p>
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter username" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+            <div class="login-options">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="#" onclick="showForgotPassword()">Forgot password?</a>
+            </div>
+            <button class="login-btn" type="submit">Login</button>
+            <p id="loginError" class="error-message"></p>
+        </form>
+        <div class="demo-login">Demo: <b>admin</b> / <b>admin</b></div>
+    </div>
+</div>
+
+<div id="app" class="app hidden">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo"><div class="logo-icon">🍽️</div><div><h2>FoodOrder</h2><span>Management</span></div></div>
+        <nav>
+            <button class="nav-item active" onclick="showPage('dashboard', this)">Dashboard</button>
+            <button class="nav-item" onclick="showPage('foods', this)">Food Management</button>
+            <button class="nav-item" onclick="showPage('customers', this)">Customers</button>
+            <button class="nav-item" onclick="showPage('newOrder', this)">Place Order</button>
+            <button class="nav-item" onclick="showPage('orders', this)">Orders</button>
+        </nav>
+        <div class="sidebar-bottom">
+            <button class="nav-item" onclick="toggleDarkMode()">Dark Mode</button>
+            <button class="nav-item logout" onclick="logout()">Logout</button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <div><h2 id="pageTitle">Dashboard</h2><p id="pageSubtitle">Welcome back, Admin</p></div>
+            <div class="topbar-actions">
+                <div class="global-search"><input type="text" placeholder="Search..." id="globalSearch" oninput="globalSearch()"></div>
+                <button class="icon-btn" onclick="showNotifications()">🔔</button>
+                <div class="profile"><div class="profile-avatar">A</div><div class="profile-info"><strong>Admin</strong><span>Administrator</span></div></div>
+            </div>
+        </header>
+
+        <section id="dashboard" class="page active-page">
+            <div class="page-header"><div><h1>Dashboard</h1><p>Overview of your food business</p></div><button class="primary-btn" onclick="showPageByName('newOrder')">+ New Order</button></div>
+            <div class="stats-grid">
+                <div class="stat-card" onclick="showPageByName('foods')"><div class="stat-icon orange">🍲</div><div><p>Total Food Items</p><h2 id="totalFoods">0</h2><span class="positive">↑ 12% this month</span></div></div>
+                <div class="stat-card" onclick="showPageByName('customers')"><div class="stat-icon blue">👥</div><div><p>Total Customers</p><h2 id="totalCustomers">0</h2><span class="positive">↑ 8% this month</span></div></div>
+                <div class="stat-card" onclick="showPageByName('orders')"><div class="stat-icon green">🛒</div><div><p>Total Orders</p><h2 id="totalOrders">0</h2><span class="positive">↑ 15% this month</span></div></div>
+                <div class="stat-card"><div class="stat-icon purple">₹</div><div><p>Total Revenue</p><h2 id="totalRevenue">₹0</h2><span class="positive">↑ 18% this month</span></div></div>
+            </div>
+            <div class="charts-grid">
+                <div class="card"><div class="card-header"><div><h3>Orders Overview</h3><p>Orders during this week</p></div><select id="chartFilter" onchange="updateChart()"><option>This Week</option><option>This Month</option><option>This Year</option></select></div><div class="bar-chart" id="barChart"></div></div>
+                <div class="card"><div class="card-header"><div><h3>Food Categories</h3><p>Food distribution</p></div></div><div class="category-chart"><div class="donut"></div><div class="legend"><div>🟠 Main Course <b>40%</b></div><div>🔵 Fast Food <b>30%</b></div><div>🟢 Dessert <b>15%</b></div><div>🟣 Drinks <b>15%</b></div></div></div></div>
+            </div>
+            <div class="card"><div class="card-header"><div><h3>Recent Orders</h3><p>Latest customer orders</p></div><button class="text-btn" onclick="showPageByName('orders')">View All</button></div><div class="table-container"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Food</th><th>Qty</th><th>Total</th><th>Status</th></tr></thead><tbody id="recentOrdersTable"></tbody></table></div></div>
+        </section>
+
+        <section id="foods" class="page">
+            <div class="page-header"><div><h1>Food Management</h1><p>Manage your food items and inventory</p></div><button class="primary-btn" onclick="openFoodModal()">+ Add Food</button></div>
+            <div class="toolbar"><div class="search-box"><input type="text" id="foodSearch" placeholder="Search food..." oninput="renderFoods()"></div><select id="categoryFilter" onchange="renderFoods()"><option value="all">All Categories</option><option>Main Course</option><option>Fast Food</option><option>Dessert</option><option>Drinks</option><option>Snacks</option></select><select id="stockFilter" onchange="renderFoods()"><option value="all">All Stock</option><option value="in">In Stock</option><option value="low">Low Stock</option><option value="out">Out of Stock</option></select></div>
+            <div class="card"><div class="table-container"><table><thead><tr><th>ID</th><th>Food</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody id="foodTable"></tbody></table></div></div>
+        </section>
+
+        <section id="customers" class="page">
+            <div class="page-header"><div><h1>Customer Management</h1><p>Manage your customers</p></div><button class="primary-btn" onclick="openCustomerModal()">+ Add Customer</button></div>
+            <div class="toolbar"><div class="search-box"><input type="text" id="customerSearch" placeholder="Search customers..." oninput="renderCustomers()"></div></div>
+            <div class="card"><div class="table-container"><table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Address</th><th>Total Orders</th><th>Actions</th></tr></thead><tbody id="customerTable"></tbody></table></div></div>
+        </section>
+
+        <section id="newOrder" class="page">
+            <div class="page-header"><div><h1>Place New Order</h1><p>Create a new customer order</p></div></div>
+            <div class="order-layout">
+                <div class="card"><h3>Order Information</h3><form id="orderForm">
+                    <div class="form-group"><label>Select Customer</label><select id="orderCustomer" required></select></div>
+                    <div class="form-group"><label>Select Food</label><select id="orderFood" onchange="updateOrderFood()" required></select></div>
+                    <div class="form-row"><div class="form-group"><label>Food Price</label><input id="orderPrice" readonly></div><div class="form-group"><label>Available Stock</label><input id="orderStock" readonly></div></div>
+                    <div class="form-group"><label>Quantity</label><input type="number" id="orderQuantity" min="1" value="1" oninput="calculateTotal()" required><small id="stockError" class="field-error"></small></div>
+                    <button type="submit" class="primary-btn full-width">Place Order</button>
+                </form></div>
+                <div class="card order-summary"><h3>Order Summary</h3><div class="summary-icon">🧾</div>
+                    <div class="summary-row"><span>Customer</span><strong id="summaryCustomer">-</strong></div>
+                    <div class="summary-row"><span>Food</span><strong id="summaryFood">-</strong></div>
+                    <div class="summary-row"><span>Price</span><strong id="summaryPrice">₹0</strong></div>
+                    <div class="summary-row"><span>Quantity</span><strong id="summaryQuantity">0</strong></div>
+                    <div class="summary-total"><span>Total Amount</span><strong id="summaryTotal">₹0</strong></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="orders" class="page">
+            <div class="page-header"><div><h1>Orders</h1><p>View and manage all orders</p></div></div>
+            <div class="toolbar"><div class="search-box"><input type="text" id="orderSearch" placeholder="Search orders..." oninput="renderOrders()"></div><select id="statusFilter" onchange="renderOrders()"><option value="all">All Status</option><option>PLACED</option><option>PREPARING</option><option>COMPLETED</option><option>CANCELLED</option></select></div>
+            <div class="card"><div class="table-container"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Food</th><th>Qty</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+        </section>
+    </main>
+</div>
+
+<div id="foodModal" class="modal"><div class="modal-content"><div class="modal-header"><div><h2 id="foodModalTitle">Add Food</h2><p>Enter food information</p></div><button class="close-btn" onclick="closeFoodModal()">×</button></div><form id="foodForm"><input type="hidden" id="editFoodId"><div class="form-group"><label>Food Name</label><input id="foodName" required></div><div class="form-group"><label>Category</label><select id="foodCategory" required><option value="">Select Category</option><option>Main Course</option><option>Fast Food</option><option>Dessert</option><option>Drinks</option><option>Snacks</option></select></div><div class="form-row"><div class="form-group"><label>Price</label><input type="number" id="foodPrice" min="1" step=".01" required></div><div class="form-group"><label>Quantity</label><input type="number" id="foodQuantity" min="0" required></div></div><div class="modal-actions"><button type="button" class="secondary-btn" onclick="closeFoodModal()">Cancel</button><button type="submit" class="primary-btn">Save Food</button></div></form></div></div>
+
+<div id="customerModal" class="modal"><div class="modal-content"><div class="modal-header"><div><h2 id="customerModalTitle">Add Customer</h2><p>Enter customer information</p></div><button class="close-btn" onclick="closeCustomerModal()">×</button></div><form id="customerForm"><input type="hidden" id="editCustomerId"><div class="form-group"><label>Customer Name</label><input id="customerName" required></div><div class="form-group"><label>Phone</label><input id="customerPhone" required></div><div class="form-group"><label>Address</label><textarea id="customerAddress" required></textarea></div><div class="modal-actions"><button type="button" class="secondary-btn" onclick="closeCustomerModal()">Cancel</button><button type="submit" class="primary-btn">Save Customer</button></div></form></div></div>
+
+<div id="orderModal" class="modal"><div class="modal-content"><div class="modal-header"><div><h2>Order Details</h2><p>Order information</p></div><button class="close-btn" onclick="closeOrderModal()">×</button></div><div id="orderDetailsContent"></div></div></div>
+
+<div id="toast" class="toast"><span id="toastMessage">Success</span></div>
+<script src="script.js"></script>
+</body>
+</html>
